@@ -9,7 +9,7 @@ import { UsersContext } from '../../usersContext'
 
 const Login = () => {
     const socket = useContext(SocketContext)
-    const { name, setName, room, setRoom } = useContext(MainContext)
+    const { name, setName, room, setRoom, isMod, setIsMod, modCode, setModCode } = useContext(MainContext)
     const history = useHistory()
     const toast = useToast()
     const { setUsers } = useContext(UsersContext)
@@ -22,9 +22,24 @@ const Login = () => {
         })
     })
 
+    function createRoomId(length) {
+        var result           = '';
+        var characters       = 'abcdefghijklmnopqrstuvwxyz0123456789';
+        var charactersLength = characters.length;
+        for ( var i = 0; i < length; i++ ) {
+           result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+        return result;
+     }
+
+
     //Emits the login event and if successful redirects to chat and saves user data
     const handleClick = () => {
-        socket.emit('login', { name, room }, error => {
+        let roomId = createRoomId(1);
+        setRoom(() => roomId);
+        setIsMod(() => true);
+        console.log(modCode);
+        socket.emit('login', { name, roomId, modCode }, error => {
             if (error) {
                 console.log(error)
                 return toast({
@@ -48,13 +63,49 @@ const Login = () => {
         })
     }
 
+    const handleClickJoin = () => {
+        //let roomId = createRoomId(1);
+        //setRoom(() => roomId);;
+        socket.emit('goto', { name, room, modCode }, (arg , error) => {
+            if (error) {
+                console.log(error)
+                return toast({
+                    position: "top",
+                    title: "Error",
+                    description: error,
+                    status: "error",
+                    duration: 5000,
+                    isClosable: true,
+                })
+            }
+            //console.log("MODCODE----", arg );
+            setIsMod(() => arg);
+            history.push('/chat')
+            return toast({
+                position: "top",
+                title: "Hey there",
+                description: `Welcome to ${room}`,
+                status: "success",
+                duration: 5000,
+                isClosable: true,
+            })
+        })
+    }
+
     return (
         <Flex className='login' flexDirection='column' mb='8'>
             <Heading as="h1" size="4xl" textAlign='center' mb='8' fontFamily='DM Sans' fontWeight='600' letterSpacing='-2px'>Chattr.io</Heading>
             <Flex className="form" gap='1rem' flexDirection={{ base: "column", md: "row" }}>
                 <Input variant='filled' mr={{ base: "0", md: "4" }} mb={{ base: "4", md: "0" }} type="text" placeholder='User Name' value={name} onChange={e => setName(e.target.value)} />
-                <Input variant='filled' mr={{ base: "0", md: "4" }} mb={{ base: "4", md: "0" }} type="text" placeholder='Room Name' value={room} onChange={e => setRoom(e.target.value)} />
+                <Input variant='filled' mr={{ base: "0", md: "4" }} mb={{ base: "4", md: "0" }} type="text" placeholder='Mod Code' value={modCode} onChange={e => setModCode(e.target.value)} />
                 <IconButton colorScheme='blue' isRound='true' icon={<RiArrowRightLine />} onClick={handleClick}></IconButton>
+            </Flex>
+            <br></br><br></br><br></br>
+            <Flex className="form" gap='1rem' flexDirection={{ base: "column", md: "row" }}>
+                <Input variant='filled' mr={{ base: "0", md: "4" }} mb={{ base: "4", md: "0" }} type="text" placeholder='User Name' value={name} onChange={e => setName(e.target.value)} />
+                <Input variant='filled' mr={{ base: "0", md: "4" }} mb={{ base: "4", md: "0" }} type="text" placeholder='Room Name' value={room} onChange={e => setRoom(e.target.value)} />
+                <Input variant='filled' mr={{ base: "0", md: "4" }} mb={{ base: "4", md: "0" }} type="text" placeholder='Mod Code( For Moderators only)' value={modCode} onChange={e => setModCode(e.target.value)} />
+                <IconButton colorScheme='blue' isRound='true' icon={<RiArrowRightLine />} onClick={handleClickJoin}></IconButton>
             </Flex>
         </Flex>
     )
