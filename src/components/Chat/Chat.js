@@ -13,6 +13,8 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
+  Image,
+  Icon,
 } from "@chakra-ui/react";
 import { FiList } from "react-icons/fi";
 import { BiMessageDetail } from "react-icons/bi";
@@ -20,7 +22,10 @@ import { RiSendPlaneFill } from "react-icons/ri";
 import ScrollToBottom from "react-scroll-to-bottom";
 import { useToast } from "@chakra-ui/react";
 import "./Chat.scss";
+import { ImTwitter } from "react-icons/im"
+
 import { UsersContext } from "../../usersContext";
+//import Jimp from 'jimp';
 
 const Chat = () => {
   const { name, room, setName, setRoom, isMod } = useContext(MainContext);
@@ -43,14 +48,15 @@ const Chat = () => {
     });
 
     socket.on("notification", (notif) => {
-      toast({
-        position: "top",
-        title: notif?.title,
-        description: notif?.description,
-        status: "success",
-        duration: 5000,
-        isClosable: true,
-      });
+      // toast({
+      //   position: "top",
+      //   title: notif?.title,
+      //   description: notif?.description,
+      //   status: "success",
+      //   duration: 5000,
+      //   isClosable: true,
+      // });
+      console.log("new user join");
     });
   }, [socket, toast]);
 
@@ -71,37 +77,36 @@ const Chat = () => {
     <Flex
       className="room"
       flexDirection="column"
-      width={{ base: "100%", sm: "575px" }}
-      height={{ base: "100%", sm: "auto" }}
+      width={{ base: "100%", sm: "90%" }}
+      height={{ base: "100%", sm: "90%" }}
     >
       <Heading
         className="heading"
         as="h4"
         bg="white"
-        p="1rem 1.5rem"
+        p="1rem 1rem"
         borderRadius="10px 10px 0 0"
       >
         <Flex alignItems="center" justifyContent="space-between">
-        
-
-
           <Menu>
-            <MenuButton
-              as={IconButton}
-              icon={<FiList />}
-              isRound="true"
-              bg="blue.300"
-              color="white"
-            />
+            <MenuButton isRound="true" color="white">
+              <Image
+                boxSize="3rem"
+                borderRadius="full"
+                src="https://placekitten.com/100/100"
+                alt="Fluffybuns the destroyer"
+              />
+            </MenuButton>
             <MenuList>
-              {users &&
-                users.map((user) => {
-                  return (
-                    <MenuItem minH="40px" key={user.id}>
-                      <Text fontSize="sm">{user.name}</Text>
-                    </MenuItem>
-                  );
-                })}
+              <MenuItem minH="40px">
+                <Text fontSize="sm">Download Image</Text>
+              </MenuItem>
+              <MenuItem minH="40px">
+                <Text fontSize="sm">User Name : {name} </Text>
+              </MenuItem>
+              <MenuItem minH="40px">
+                <Text fontSize="sm">Total Users : {users.length}</Text>
+              </MenuItem>
             </MenuList>
           </Menu>
           <Flex
@@ -109,24 +114,14 @@ const Chat = () => {
             flexDirection="column"
             flex={{ base: "1", sm: "auto" }}
           >
-            <Heading fontSize="lg">
+            <Heading as="h4" size="md">
               {" "}
-              {room.slice(0, 1).toUpperCase() + room.slice(1)}
+              Room ID : {room.slice(0, 1).toUpperCase() + room.slice(1)}YASH
+              <Icon as={ImTwitter} />
+              
             </Heading>
-            <Flex alignItems="center">
-              <Text
-                mr="1"
-                fontWeight="400"
-                fontSize="md"
-                opacity=".7"
-                letterSpacing="0"
-              >
-                {name}
-              </Text>
-              <Box h={2} w={2} borderRadius="100px" bg="green.300"></Box>
-            </Flex>
           </Flex>
-          <Button color="gray.500" fontSize="sm" onClick={logout}>
+          <Button color="gray.500" fontSize="sm" width="55px" onClick={logout}>
             Logout
           </Button>
         </Flex>

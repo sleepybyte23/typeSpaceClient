@@ -68,14 +68,14 @@ const Login = () => {
         });
       }
       history.push("/chat");
-      return toast({
-        position: "top",
-        title: "Hey there",
-        description: `Welcome to ${room}`,
-        status: "success",
-        duration: 5000,
-        isClosable: true,
-      });
+      // return toast({
+      //   position: "top",
+      //   title: "Hey there",
+      //   description: `Welcome to ${room}`,
+      //   status: "success",
+      //   duration: 5000,
+      //   isClosable: true,
+      // });
     });
   };
 
